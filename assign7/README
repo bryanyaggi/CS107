@@ -1,0 +1,90 @@
+Malloc Lab / Heap Allocator Project
+
+Handout Files for Students
+**************************
+
+Main Files
+----------
+mdriver
+    Once you've run make, run ./mdriver to test your solution.
+
+traces/
+	Directory that contains the trace files that the driver uses
+	to test your solution. Files orners.rep, short2.rep, and malloc.rep
+	are tiny trace files that you can use for debugging correctness.
+
+
+Other Support Files for the Driver
+----------------------------------
+config.h:	    Configures the malloc lab driver
+fsecs.{c,h}:	Wrapper function for the different timer packages
+clock.{c,h}:	Routines for accessing the Pentium and Alpha cycle counters
+fcyc.{c,h}:	    Timer functions based on cycle counters
+ftimer.{c,h}:	Timer functions based on interval timers and gettimeofday()
+memlib.{c,h}:	Models the heap and sbrk function
+
+Building and Running the Driver
+*******************************
+
+To build the driver, type "make" to the shell.
+
+To run the driver on a tiny test trace:
+
+	unix> ./mdriver -V -f traces/malloc.rep
+
+To get a list of the driver flags:
+
+	unix> ./mdriver -h
+
+The -V option prints out helpful tracing information
+
+Design Documentation
+********************
+
+Files
+-----
+mm_ifl.c: Implicit free list implementation
+
+mm_sfl.c: Segregated free list implementation
+
+Makefile: Builds the project
+
+Overview
+--------
+This design was inspired from B&O Section 9.9.14. Free blocks are stored
+in lists according to size class. For this particular implementation, 9
+size classes are used. The classes are detailed in the code comments. A
+first fit scheme with block splitting is used for each free list.
+Coalescing occurs after a block is freed and after extending the heap. 
+Each block is given boundary tags, and free blocks store pointers to their
+previous and next blocks in its free list. A minimum heap extension of
+2^12 bytes is allowed.
+
+Rationale
+---------
+The segregated free list is much faster than an implicit or explicit free
+list only design because free blocks of the appropriate size are much
+quicker to locate. The design also reduces wasted space by allowing block
+splitting. Coalesing is necessary so that memory is not overused and
+fragmentation is prevented. A minimum size limit is set for extending the
+heap to reduce calls to extend the heap making the allocator faster.
+
+Optimization
+------------
+mdriver was used to gauge performance. Beyond design decisions, the allocator
+was optimized by using inline functions and increasing compiler optimization
+to -O3. Design decisions that could increase performance include storing
+memory addresses in 4 bytes as opposed to 8. This could be done because the
+heap size is restricted to INT_MAX size and would reduce the minimum block
+size.
+
+Evaluation
+----------
+The design is strong in utilization and speed. More optimization could be
+performed to improve utilization at the expense of some speed.
+
+References
+----------
+B&O Section 9.9.14, Stanford CS107 Piazza forum, Stanford CS107 professor and
+staff
+    
